@@ -26,6 +26,16 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   </distributionManagement>
   <name>SMS Transport</name>
   <description>SMS Transport </description>
+  <repositories>
+    <repository>
+      <id>sms-deps</id>
+      <name>SMS Dependencies</name>
+      <url>http://dist.muleforge.org/mule-transport-sms</url>
+	<snapshots>
+	  <enabled>false</enabled>
+	</snapshots>
+    </repository>
+  </repositories>
   <dependencies>
     <dependency>
       <groupId>org.mule.transports</groupId>
@@ -62,6 +72,12 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <artifactId>mule-tests-functional</artifactId>
       <version>${muleVersion}</version>
     </dependency>
+    <dependency>
+      <groupId>smslib</groupId>
+      <artifactId>smslib</artifactId>
+      <version>2.1.4</version>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
-
+	
 </project>

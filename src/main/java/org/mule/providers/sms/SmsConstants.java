@@ -18,18 +18,14 @@ under the License.
 */
 package org.mule.providers.sms;
 
-import org.mule.umo.UMOException;
-import org.mule.umo.endpoint.UMOImmutableEndpoint;
-import org.mule.umo.provider.UMOMessageDispatcher;
-import org.mule.umo.provider.UMOMessageDispatcherFactory;
 
-/**
- * Creates an instance of {@link SmsMessageDispatcher}
- */
-public class SmsMessageDispatcherFactory implements UMOMessageDispatcherFactory
+public interface SmsConstants
 {
-    public UMOMessageDispatcher create(UMOImmutableEndpoint endpoint) throws UMOException
-    {
-        return new SmsMessageDispatcher(endpoint);
-    }
+    static final String SMS_DATE = "SMS_DATE";
+    static final String SMS_ENCODING = "SMS_ENCODING";
+    static final String SMS_ID = "SMS_ID";
+    static final String SMS_SENDER = "SMS_SENDER";
+    static final String SMS_STATUSREPORT = "SMS_STATUSREPORT";
+    static final String SMS_RECEIVER = "SMS_RECEIVER";
+    static final String SMS_FLASH = "SMS_FLASH";
 }

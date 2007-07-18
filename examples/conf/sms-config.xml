@@ -3,12 +3,8 @@
 <!DOCTYPE mule-configuration PUBLIC "-//MuleSource //DTD mule-configuration XML V1.0//EN"
                                 "http://mule.mulesource.org/dtds/mule-configuration.dtd">
 
-<mule-configuration id="Mule_RUActive" version="1.0">
+<mule-configuration id="Mule_Sms" version="1.0">
 
-    <description>
-	   R U Active
-    </description>	
-	
 	<connector name="smsConnector" className="org.mule.providers.sms.SmsConnector">
     	<properties>
 			<property name="pollingFrequency" value="60000"/>
@@ -33,11 +29,11 @@
 		<transformer name="stringToSmsTransformer" className="example.StringToSmsTransformer" />		
 	</transformers>
 	
-	<model name="rua">
+	<model name="sms">
 		<mule-descriptor name="smsPoller"
 			implementation="example.SystemOutComponent">
 			<inbound-router>
-				<endpoint address="sms://+32496250169"/>
+				<endpoint address="sms://+35699575067"/>
 			</inbound-router>				
 			 <outbound-router>
                 <router className="org.mule.routing.outbound.OutboundPassThroughRouter">					

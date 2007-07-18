@@ -30,7 +30,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     <repository>
       <id>sms-deps</id>
       <name>SMS Dependencies</name>
-      <url>http://dist.muleforge.org/mule-transport-sms</url>
+      <url>http://dist.muleforge.org/mule-transport-sms/dependencies/maven2</url>
 	<snapshots>
 	  <enabled>false</enabled>
 	</snapshots>

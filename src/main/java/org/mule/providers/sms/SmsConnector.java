@@ -1,35 +1,35 @@
 /**
-Licensed to the Apache Software Foundation (ASF) under one
-or more contributor license agreements. See the NOTICE file
-distributed with this work for additional information
-regarding copyright ownership. The ASF licenses this file
-to you under the Apache License, Version 2.0 (the
-"License"); you may not use this file except in compliance
-with the License. You may obtain a copy of the License at
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements. See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership. The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License. You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing,
-software distributed under the License is distributed on an
-"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-KIND, either express or implied. See the License for the
-specific language governing permissions and limitations
-under the License.
-*/
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied. See the License for the
+ specific language governing permissions and limitations
+ under the License.
+ */
 
 package org.mule.providers.sms;
 
 import org.mule.providers.AbstractServiceEnabledConnector;
-import org.mule.umo.UMOComponent;
-import org.mule.umo.endpoint.UMOEndpoint;
-import org.mule.umo.provider.UMOMessageReceiver;
 import org.mule.util.StringUtils;
 
-import java.util.Map;
-import java.util.Properties;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import gnu.io.CommPortIdentifier;
 
 public class SmsConnector extends AbstractServiceEnabledConnector
 {
@@ -51,12 +51,18 @@ public class SmsConnector extends AbstractServiceEnabledConnector
     public static final String PROPERTY_DELETE_MESSAGE = "deleteReadMessages";
     public static final String PROPERTY_RECONNECT = "reconnect";
     public static final long DEFAULT_POLLING_FREQUENCY = 60000L;
+
     private boolean deleteReadMessages;
     private long pollingFrequency;
     private String gsmCom;
     private int gsmBaudrate;
     private String gsmManufacturer;
     private String gsmModel;
+    /* If you prefer to use an IP modem, use the modemIp and modemPort and leave the gsmCom and gsmBaudRte blank */
+    private String modemIp;
+    private int modemPort;
+    private String simPin;
+
     private boolean reconnect;
 
     public SmsConnector()
@@ -81,101 +87,6 @@ public class SmsConnector extends AbstractServiceEnabledConnector
     public String getProtocol()
     {
         return "sms";
-    }
-
-    public UMOMessageReceiver createReceiver(UMOComponent component, UMOEndpoint endpoint)
-            throws Exception
-    {
-        long polling;
-        polling = pollingFrequency;
-        Map props = endpoint.getProperties();
-        if (props != null)
-        {
-            String tempPolling = (String) props.get("pollingFrequency");
-            if (tempPolling != null)
-            {
-                polling = Long.parseLong(tempPolling);
-            }
-            if (polling <= 0L)
-            {
-                polling = 60000L;
-            }
-            if (logger.isDebugEnabled())
-            {
-                logger.debug("set polling frequency to: " + polling);
-            }
-            String tempGsmCom = (String) props.get("gsmCom");
-            if (tempGsmCom != null)
-            {
-                if (logger.isDebugEnabled())
-                {
-                    logger.debug("set gsmCom to: " + tempGsmCom);
-                }
-                gsmCom = tempGsmCom;
-            }
-            String tempGsmBaudrate = (String) props.get("gsmBaudrate");
-            if (tempGsmBaudrate != null)
-            {
-                gsmBaudrate = Integer.parseInt(tempGsmBaudrate);
-                if (gsmBaudrate <= 0)
-                {
-                    gsmBaudrate = 2400;
-                }
-                if (logger.isDebugEnabled())
-                {
-                    logger.debug("set gsmBaudrate to: " + gsmBaudrate);
-                }
-            }
-            String tempGsmManufacturer = (String) props.get("gsmManufacturer");
-            if (tempGsmManufacturer != null)
-            {
-                if (logger.isDebugEnabled())
-                {
-                    logger.debug("set gsmManufacturer to: " + tempGsmManufacturer);
-                }
-                gsmManufacturer = tempGsmManufacturer;
-            }
-            String tempGsmModel = (String) props.get("gsmModel");
-            if (tempGsmModel != null)
-            {
-                if (logger.isDebugEnabled())
-                {
-                    logger.debug("set gsmModel to: " + tempGsmModel);
-                }
-                gsmModel = tempGsmModel;
-            }
-            String tempDeleteReadMessages = (String) props.get("deleteReadMessages");
-            if (tempDeleteReadMessages != null)
-            {
-                if (logger.isDebugEnabled())
-                {
-                    logger.debug("set deleteReadMessages to: " + tempDeleteReadMessages);
-                }
-                deleteReadMessages = Boolean.parseBoolean(tempDeleteReadMessages);
-            }
-            String tempReconnect = (String) props.get("reconnect");
-            if (tempReconnect != null)
-            {
-                if (logger.isDebugEnabled())
-                {
-                    logger.debug("set deleteReadMessages to: " + tempReconnect);
-                }
-                reconnect = Boolean.parseBoolean(tempReconnect);
-            }
-            Map srvOverride = (Map) props.get("serviceOverrides");
-            if (srvOverride != null)
-            {
-                if (super.serviceOverrides == null)
-                {
-                    super.serviceOverrides = new Properties();
-                }
-                super.serviceOverrides.setProperty("inbound.transformer", (org.mule.transformers.NoActionTransformer.class).getName());
-                super.serviceOverrides.setProperty("outbound.transformer", (org.mule.transformers.NoActionTransformer.class).getName());
-            }
-        }
-        return super.serviceDescriptor.createMessageReceiver(this, component, endpoint, new Object[]{
-                gsmCom, Integer.valueOf(gsmBaudrate), gsmManufacturer, gsmModel, Boolean.valueOf(reconnect), new Long(polling)
-        });
     }
 
     public int getGsmBaudrate()
@@ -236,5 +147,53 @@ public class SmsConnector extends AbstractServiceEnabledConnector
     public void setDeleteReadMessages(boolean deleteReadMessages)
     {
         this.deleteReadMessages = deleteReadMessages;
+    }
+
+    public String getModemIp()
+    {
+        return modemIp;
+    }
+
+    public void setModemIp(String modemIp)
+    {
+        this.modemIp = modemIp;
+    }
+
+    public int getModemPort()
+    {
+        return modemPort;
+    }
+
+    public void setModemPort(int modemPort)
+    {
+        this.modemPort = modemPort;
+    }
+
+    public String getSimPin()
+    {
+        return simPin;
+    }
+
+    public void setSimPin(String simPin)
+    {
+        this.simPin = simPin;
+    }
+
+    public List getComPorts()
+    {
+        CommPortIdentifier portId;
+        Enumeration portList = CommPortIdentifier.getPortIdentifiers();
+        List ports = new ArrayList(10);
+
+        while (portList.hasMoreElements())
+        {
+            portId = (CommPortIdentifier) portList.nextElement();
+
+            if (portId.getPortType() == CommPortIdentifier.PORT_SERIAL)
+            {
+                ports.add(portId.getName());
+            }
+        }
+        return ports;
     }
 }

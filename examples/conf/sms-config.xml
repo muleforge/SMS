@@ -8,11 +8,11 @@
 	<connector name="smsConnector" className="org.mule.providers.sms.SmsConnector">
     	<properties>
 			<property name="pollingFrequency" value="60000"/>
-			<property name="gsmCom" value="COM40"/>			
+			<property name="gsmCom" value="Nokia6230-1"/>
 			<property name="gsmBaudrate" value="4800"/>
 			<property name="gsmManufacturer" value="Nokia"/>
-			<property name="gsmModel" value="Nokia6230i"/>	
-			<property name="deleteReadMessages" value="true"/>
+			<property name="gsmModel" value="Nokia6230"/>
+			<property name="deleteReadMessages" value="false"/>
 			<property name="reconnect" value="false"/>
 		</properties>
 	</connector>	
@@ -26,14 +26,14 @@
 	</connector>
 	
 	<transformers>
-		<transformer name="stringToSmsTransformer" className="example.StringToSmsTransformer" />		
+		<transformer name="stringToSmsTransformer" className="org.mule.examples.sms.StringToSmsTransformer" />
 	</transformers>
 	
 	<model name="sms">
 		<mule-descriptor name="smsPoller"
-			implementation="example.SystemOutComponent">
+			implementation="org.mule.examples.sms.SystemOutComponent">
 			<inbound-router>
-				<endpoint address="sms://+35699575067"/>
+				<endpoint address="sms://+447919376766"/>
 			</inbound-router>				
 			 <outbound-router>
                 <router className="org.mule.routing.outbound.OutboundPassThroughRouter">					

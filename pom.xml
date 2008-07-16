@@ -6,7 +6,7 @@
     <groupId>org.mule.providers</groupId>
     <artifactId>mule-transport-sms</artifactId>
     <packaging>jar</packaging>
-    <version>1.0</version>
+    <version>1.0-SNAPSHOT</version>
     <properties>
         <muleVersion>1.3.3</muleVersion>
     </properties>
@@ -21,7 +21,7 @@
         </snapshotRepository>
         <site>
             <id>muleforge.webdav.sites</id>
-            <url>dav:https://dav.muleforge.org/${artifactId}/</url>
+            <url>dav:https://dav.muleforge.org/${artifactId}/maven</url>
         </site>
     </distributionManagement>
     <name>SMS Transport</name>
